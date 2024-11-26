@@ -4,3 +4,5 @@ venv/
 
 data/ravdess_production
 data/ravdess_organized
+
+__pycache__/
