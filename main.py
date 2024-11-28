@@ -1,5 +1,6 @@
 from from_root import from_root
-from src.data.make_dataset import organize_dataset_into_emotion_type, create_production_data
+from src.make_dataset import organize_dataset_into_emotion_type, create_production_data
+from src.visualize import get_random_audio_files, plot_audio_features
 
 RAW_DATASET_FOLDER = from_root('data', 'ravdess_raw')
 ORGANIZED_DATASET_FOLDER = from_root('data', 'ravdess_organized')
@@ -17,6 +18,10 @@ if __name__ == "__main__":
                            production_data_folder=PRODUCTION_DATASET_FOLDER,
                            n_sample=5)
 
-
-
-
+    # Get random audio files
+    print("Get random audio files")
+    random_audio_samples = get_random_audio_files(organized_data_folder=ORGANIZED_DATASET_FOLDER,
+                                              n_sample=6)
+    # Plot the random audio files
+    print("Make the plot of the audio characteristics.")
+    plot_audio_features(audio_samples=random_audio_samples, n_samples=6)
