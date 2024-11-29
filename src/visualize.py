@@ -1,10 +1,13 @@
-import math
+################################################################################
+#                                                                              #
+#                   This is the visualization part of the project              #
+#                                                                              #
+################################################################################
 import random
 from pathlib import Path
 from typing import Dict
 
 import librosa  # For audio analysis and processing
-import librosa.display  # For visualizing audio features
 import matplotlib.pyplot as plt
 import numpy as np
 from from_root import from_root
@@ -138,11 +141,14 @@ def plot_emotion_spectrograms(audio_samples: Dict[str, list], num_samples: int =
         for idx, emotion_file in enumerate(emotion_files[:num_samples]):
             y, sr = librosa.load(emotion_file)  # Load the audio file
 
-            d = np.abs(librosa.stft(y=y, n_fft=N_FFT,  hop_length=HOPE_LENGTH))
-            db = librosa.amplitude_to_db(d, ref=np.max)
+            # Compute spectogram
+            spec = np.abs(librosa.stft(y=y, n_fft=N_FFT, hop_length=HOPE_LENGTH)) ** 2
+
+            # Compute Log-Amplitude Spectogram
+            log_spec = librosa.power_to_db(spec)
 
             # Plot the spectrogram
-            librosa.display.specshow(db, x_axis='time', y_axis='log', sr=sr, ax=axs[idx],
+            librosa.display.specshow(log_spec, x_axis='time', y_axis='log', sr=sr, ax=axs[idx],
                                      fmax=8000, cmap='viridis')
             axs[idx].set_title(f'{emotion_file.name}')
             axs[idx].set_xlabel('Time')
@@ -158,7 +164,6 @@ def plot_emotion_spectrograms(audio_samples: Dict[str, list], num_samples: int =
 def plot_emotion_rms(audio_samples: Dict[str, list], num_samples: int = 6) -> None:
     """
     Plot RMS energy of audio files grouped by emotion. 
-
     Args:
         audio_samples (Dict[str, list]): Dict where keys are emotion types 
                                          and values are lists of audio file paths.
@@ -197,9 +202,9 @@ def plot_emotion_rms(audio_samples: Dict[str, list], num_samples: int = 6) -> No
         plt.close()
 
 
-def plot_emotion_mel_spectrogram(audio_samples: Dict[str, list], num_samples: int = 6) -> None:
+def plot_emotion_log_mel_spectrogram(audio_samples: Dict[str, list], num_samples: int = 6) -> None:
     """
-    Plot mel spectrograms of audio files grouped by emotion.
+    Plot log mel spectrograms of audio files grouped by emotion.
     Args:
         audio_samples (Dict[str, list]): Dict where keys are emotion types 
                                          and values are lists of audio file paths.
@@ -221,14 +226,15 @@ def plot_emotion_mel_spectrogram(audio_samples: Dict[str, list], num_samples: in
             y, sr = librosa.load(emotion_file)
 
             # Compute the mel spectrogram
-            s = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=N_FFT,
+            mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=N_FFT,
                                                hop_length=HOPE_LENGTH, n_mels=128)
 
-            # Convert the mel spectrogram to log scale (decibels)
-            s_db = librosa.power_to_db(S=s, ref=np.max)
+            # Convert the mel spectrogram to log mel spectrogram
+            # power_to_db (): does a logharthimc transformation
+            log_mel_spec = librosa.power_to_db(S=mel_spec)
 
-            # Plot the log power mel spectrogram
-            img = librosa.display.specshow(s_db, x_axis='time', y_axis='mel', sr=sr,
+            # Plot the log mel spectrogram
+            img = librosa.display.specshow(log_mel_spec, x_axis='time', y_axis='mel', sr=sr,
                                            fmax=8000, ax=axs[idx], cmap='viridis')
             axs[idx].set_title(f'{emotion_file.name}')
             axs[idx].set_xlabel('Time')
@@ -236,7 +242,7 @@ def plot_emotion_mel_spectrogram(audio_samples: Dict[str, list], num_samples: in
             fig.colorbar(img, ax=axs[idx], format='%+2.0f dB')
 
         # Add a title for the current emotion
-        fig.suptitle(f'Mel Spectrograms for Emotion: {emotion}', fontsize=16)
+        fig.suptitle(f'Log Mel Spectrograms for Emotion: {emotion}', fontsize=16)
         fig.tight_layout(rect=[0, 0, 1, 0.95])  # Adjust layout for the global title
         plt.savefig(f"{REPORTS_DATASET_FOLDER}/{emotion}_mel_spectrogram.png")
         plt.close()
@@ -264,4 +270,4 @@ def plot_audio_features(audio_samples: Dict[str, list], n_samples: int = 6) -> N
     plot_emotion_spectrograms(audio_samples=audio_samples, num_samples=n_samples)
 
     # Call the function that plots the log mel spectrograms
-    plot_emotion_mel_spectrogram(audio_samples=audio_samples, num_samples=n_samples)
+    plot_emotion_log_mel_spectrogram(audio_samples=audio_samples, num_samples=n_samples)
