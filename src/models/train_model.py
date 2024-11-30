@@ -5,9 +5,11 @@
 ################################################################################
 
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.utils import to_categorical
+from keras.utils import to_categorial 
 from typing import Tuple
 import numpy as np
+
+from models import cnn_model
 
 def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: float = 0.2, test_size: float = 0.1) -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
     """
@@ -32,13 +34,14 @@ def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: flo
     label_to_index = {label: idx for idx, label in enumerate(unique_labels)}
     labels_numeric = np.array([label_to_index[label] for label in labels])
 
+    # One-hot encode the labels
+    num_classes = len(unique_labels)
+    labels_encoded = to_categorical(labels_numeric, num_classes)
+
     # Reshape the features for compatibility with CNN models
     height, width = features.shape[1], features.shape[2]
     features = features.reshape(features.shape[0], height, width, 1)
 
-    # One-hot encode the labels
-    num_classes = len(unique_labels)
-    labels_encoded = to_categorical(labels_numeric, num_classes)
 
     # Split data into temporary (train+val) and test sets
     x_temp, x_test, y_temp, y_test = train_test_split(
@@ -55,6 +58,10 @@ def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: flo
     return x_train, x_val, x_test, y_train, y_val, y_test
 
 
-def model_training ():
+def model_training (x_train, x_val, y_train, y_val):
     
-    ...
+    model = cnn_model()
+    
+    history = model 
+    
+    

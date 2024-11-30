@@ -1,4 +1,10 @@
-"""from from_root import from_root
+################################################################################
+#                                                                              #
+#                   This is the features preparation part of the project       #
+#                                                                              #
+################################################################################
+
+from from_root import from_root
 from src.make_dataset import organize_dataset_into_emotion_type, create_production_data
 from src.visualize import get_random_audio_files, plot_audio_features
 from src.build_features import extract_audio_features
@@ -32,12 +38,11 @@ if __name__ == "__main__":
     dataset = extract_audio_features(organized_data_folder=ORGANIZED_DATASET_FOLDER)
 
     x_train, x_val, x_test, y_train, y_val, y_test = prepare_and_split_data(data=dataset)
-    print(x_train.shape, y_train.shape)
-    print(x_val.shape, y_val.shape)
-    print(x_test.shape, y_test.shape)
-    """
-import tensorflow as tf # type: ignore
-import keras # type: ignore
-
-print("TensorFlow version:", tf.__version__)
-print("Keras version:", keras.__version__)
+    print(f"Train features: {x_train.shape}, Train labels: {y_train.shape}")
+    print(f"Val features: {x_val.shape}, Val labels: {y_val.shape}")
+    print(f"Test features: {x_test.shape}, Test labels: {y_test.shape}")
+    
+    model_training()
+    
+    
+    
