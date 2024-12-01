@@ -15,6 +15,7 @@ from tqdm import tqdm
 N_FFT = 512  # Number of FFT components for spectrograms
 HOPE_LENGTH = 512  # Hop length for sliding window in spectrograms
 N_MELS = 128  # Number of Mel bands for mel spectrograms
+N_MFCCs = 32
 
 
 def pad_to_consistent_shape(arr, target_shape) -> np.ndarray :
@@ -117,7 +118,7 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
                     normalized_log_spec = normalize_feature(feature=log_spec)
 
                     # Extract MFCCs (Exclude the 0th coefficient)
-                    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)[1:]
+                    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCCs)[1:]
                     # Normalize mfcc
                     normalized_mfcc = normalize_feature(feature=mfcc)
 

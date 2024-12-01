@@ -5,22 +5,22 @@
 ################################################################################
 
 from sklearn.model_selection import train_test_split
-from keras.utils import to_categorial 
+from keras.utils import to_categorical
 from typing import Tuple
 import numpy as np
+from keras.models import Sequential
 
-from models import cnn_model
+from src.models.models_architectures import cnn_model
 
-def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: float = 0.2, test_size: float = 0.1) -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
+def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: float = 0.2, test_size: float = 0.1) \
+        -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
     """
     Splits data into training, validation, and test sets.
-
     Args:
         data (dict): Dictionary containing features and labels.
         feature_type (str, optional): Feature type to extract (e.g., 'mfcc'). Defaults to 'mfcc'.
         val_size (float, optional): Proportion of validation data. Defaults to 0.2.
         test_size (float, optional): Proportion of test data. Defaults to 0.1.
-
     Returns:
         Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
             Training, validation, and test features and labels.
@@ -58,10 +58,17 @@ def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: flo
     return x_train, x_val, x_test, y_train, y_val, y_test
 
 
-def model_training (x_train, x_val, y_train, y_val):
+def model_training (x_train, x_val, y_train, y_val, n_classes):
+
+    # Prepare the input shape of the model
+    input_shape = x_train.shape[1:]
+
+    # Get the model
+    model : Sequential = cnn_model(input_shape=input_shape, num_classes=n_classes)
     
-    model = cnn_model()
-    
-    history = model 
-    
-    
+    history = model.fit(x_train, y_train,
+                        validation_data=(x_val, y_val),
+                        epochs=20,
+                        batch_size=32)
+
+    return history, model
