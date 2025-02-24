@@ -45,7 +45,8 @@ def plot_training_history(history, model_type, report_folder):
     plt.suptitle(f'Training and Validation Accuracy for {model_type.upper()} model')
     plt.tight_layout()
     plt.savefig(f'{report_folder}/{model_type.upper()}_training_history_plot.png')
-    plt.show()
+    #plt.show()
+    plt.close()
 
 
 def plot_confusion_matrix(y_true, y_predicted, class_names, model_type, report_folder):
@@ -82,7 +83,7 @@ def plot_confusion_matrix(y_true, y_predicted, class_names, model_type, report_f
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
     plt.savefig(f'{report_folder}/{model_type.upper()}_confusion_matrix.png')
-    plt.show()
+    plt.close()
 
 
 def plot_roc_auc_curve(model, x_test, y_test, class_names, model_type, report_folder):
@@ -118,7 +119,7 @@ def plot_roc_auc_curve(model, x_test, y_test, class_names, model_type, report_fo
     plt.title(f"Receiver Operating Characteristic (ROC) for {model_type.upper()} model")
     plt.legend(loc='lower right')
     plt.savefig(f'{report_folder}/{model_type.upper()}_ROC_AUC_curve.png')
-    plt.show()
+    plt.close()
 
 
 def model_performance_and_assessment(history, model, x_test, y_test, class_names, model_type, report_folder):

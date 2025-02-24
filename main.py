@@ -22,34 +22,32 @@ FEATURES_TYPES = ['spectrogram', 'mfcc', 'mel_log_spectrogram']
 
 if __name__ == "__main__":
     # First let arrange the folders by speech-emotion type
-    print("Let arrange the folders by speech-emotion type")
+    #print("Let arrange the folders by speech-emotion type")
     #organize_dataset_into_emotion_type(origin_data_folder=RAW_DATASET_FOLDER,
     #                                   organized_data_folder=ORGANIZED_DATASET_FOLDER)
 
     # Prepare the production data
-    #print("Prepare the production data")
+    print("Prepare the production data")
     #create_production_data(processed_data_folder=ORGANIZED_DATASET_FOLDER,
     #                       production_data_folder=PRODUCTION_DATASET_FOLDER,
     #                       n_sample=5)
 
     # Get random audio files
     print("Get random audio files")
-    random_audio_samples = get_random_audio_files(organized_data_folder=ORGANIZED_DATASET_FOLDER,
-                                              n_sample=6)
+    #random_audio_samples = get_random_audio_files(organized_data_folder=ORGANIZED_DATASET_FOLDER,
+    #                                          n_sample=6)
     # Plot the random audio files
-    #print("Make the plot of the audio characteristics.")
+    print("Make the plot of the audio characteristics.")
     #plot_audio_features(audio_samples=random_audio_samples, n_samples=6)
 
     dataset = extract_audio_features(organized_data_folder=ORGANIZED_DATASET_FOLDER)
 
-    for feature_type in FEATURES_TYPES:
+    for feature_type in ['mfcc']:#FEATURES_TYPES:
         x_train, x_val, x_test, y_train, y_val, y_test = prepare_and_split_data(data=dataset,
                                                                                 feature_type=feature_type)
         print(f"Train features: {x_train.shape}, Train labels: {y_train.shape}")
         print(f"Val features: {x_val.shape}, Val labels: {y_val.shape}")
         print(f"Test features: {x_test.shape}, Test labels: {y_test.shape}")
-
-
 
         # Train the model according to the model type
         history, model = model_training(x_train=x_train, x_val=x_val, y_train=y_train, y_val=y_val, n_classes=8)

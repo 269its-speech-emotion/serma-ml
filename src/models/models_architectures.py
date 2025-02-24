@@ -5,12 +5,12 @@
 ################################################################################
 
 from typing import Tuple
-from keras.models import Sequential
-from keras.layers import (Conv2D, LSTM, Conv1D, MaxPooling1D, MaxPool2D, Flatten, Dense, Dropout,
-                          TimeDistributed, InputLayer, Concatenate, Reshape)
+import keras
 
 
-def cnn_model(input_shape: Tuple[int, int, int], num_classes: int = 8) -> Sequential:
+
+'''
+def cnn_model(input_shape: Tuple[int, int, int], num_classes: int = 8) -> models.Sequential:
     """
     Building a 2D CNN model.
     Args:
@@ -40,3 +40,44 @@ def cnn_model(input_shape: Tuple[int, int, int], num_classes: int = 8) -> Sequen
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
+'''
+
+def cnn_1d_model(input_shape: Tuple[int, int, int], num_classes: int = 8) -> keras.models.Sequential :
+
+    model = keras.models.Sequential()
+
+    # Conv_1 layer
+    model.add(keras.layers.Conv1D(filters=64, kernel_size=5, strides=1, padding='same', input_shape=input_shape))
+    model.add(keras.layers.Activation(activation='relu'))
+    model.add(keras.layers.Dropout(rate=0.2))
+    model.add(keras.layers.MaxPooling1D(pool_size=4, strides=4, padding='same'))
+    model.add(keras.layers.BatchNormalization())
+
+    # Conv_2 layer
+    model.add(keras.layers.Conv1D(filters=128, kernel_size=5, strides=1, padding='same'))
+    model.add(keras.layers.Activation(activation='relu'))
+    model.add(keras.layers.Dropout(rate=0.2))
+    model.add(keras.layers.MaxPooling1D(pool_size=4, strides=4, padding='same'))
+    model.add(keras.layers.BatchNormalization())
+
+    # Conv_3 layer
+    model.add(keras.layers.Conv1D(filters=256, kernel_size=5, strides=1, padding='same'))
+    model.add(keras.layers.Activation(activation='relu'))
+    model.add(keras.layers.Dropout(rate=0.2))
+
+    # Flatten layer
+    model.add(keras.layers.Flatten())
+
+    # Fully Connected Layer (Dense)
+    model.add(keras.layers.Dense(units=num_classes))
+    model.add(keras.layers.Softmax())
+
+    # Compile the model
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy']
+                  )
+
+    return model
+
+

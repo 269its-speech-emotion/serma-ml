@@ -8,14 +8,19 @@ from pathlib import Path
 from typing import Dict
 
 import librosa  # For audio analysis and processing
+from librosa import feature
 import numpy as np
 from tqdm import tqdm
 
+from main import ORGANIZED_DATASET_FOLDER
 
-N_FFT = 512  # Number of FFT components for spectrograms
+N_FFT = 512 #2048  # Number of FFT components for spectrograms
 HOPE_LENGTH = 512  # Hop length for sliding window in spectrograms
 N_MELS = 128  # Number of Mel bands for mel spectrograms
 N_MFCCs = 32
+SAMPLE_RATE = 22050
+DURATION = 30
+SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
 
 
 def pad_to_consistent_shape(arr, target_shape) -> np.ndarray :
@@ -78,8 +83,13 @@ def pad_features(features: Dict[str, list], max_time_steps: Dict[str, int]) -> D
             ]
     return padded_features
 
+# Define the preprocessing functions
+def remove_silence(audio, sr, top_db=30):
+    intervals = librosa.effects.split(audio, top_db=top_db)
+    non_silent_audio = np.concatenate([audio[start:end] for start, end in intervals])
+    return non_silent_audio
 
-def extract_audio_features(organized_data_folder: Path) -> Dict:
+def extract_audio_features(organized_data_folder: Path, num_segments: int = 3) -> Dict:
     """
     Extracts features (mel log spectrogram, spectrogram, MFCC, RMS) and organizes them in a dict.
     Args:
@@ -89,11 +99,13 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
     """
     labels = []  # Centralized storage for emotion labels
     features = {  # Initialize feature containers for each type
-        'mel_log_spectrogram': [],
-        'spectrogram': [],
+        #'mel_log_spectrogram': [],
+        #'spectrogram': [],
         'mfcc': [],
-        'rms': []
+        #'rms': []
     }
+
+    num_samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
 
     # Iterate through each emotion folder
     for folder in organized_data_folder.iterdir():
@@ -103,22 +115,28 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
                     # Load audio
                     y, sr = librosa.load(emotion_file)
 
+                    #for segment in range(num_segments):
+                    #start_sample = num_samples_per_segment * segment
+                    #finish_sample = start_sample + num_samples_per_segment
+
+
                     # Extract mel spectrogram and convert to log scale
-                    mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=N_FFT,
-                                                              hop_length=HOPE_LENGTH,
-                                                              n_mels=N_MELS)
+                    mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=N_FFT, hop_length=HOPE_LENGTH, n_mels=N_MELS)
+                    mel_spec = mel_spec.T
                     log_mel_spec = librosa.power_to_db(mel_spec, ref=np.max)
                     # Normalize log mel spectrogram
                     normalized_log_mel_spec = normalize_feature(feature=log_mel_spec)
 
                     # Extract spectrogram (log scale)
-                    spec = np.abs(librosa.stft(y, n_fft=N_FFT, hop_length=HOPE_LENGTH))
+                    spec = np.abs(librosa.stft(y=y, n_fft=N_FFT, hop_length=HOPE_LENGTH))
+                    spec = spec.T
                     log_spec = librosa.amplitude_to_db(spec, ref=np.max)
                     # Normalize spectrogram
                     normalized_log_spec = normalize_feature(feature=log_spec)
 
                     # Extract MFCCs (Exclude the 0th coefficient)
                     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCCs)[1:]
+                    #mfcc = mfcc.T
                     # Normalize mfcc
                     normalized_mfcc = normalize_feature(feature=mfcc)
 
@@ -128,10 +146,10 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
                     normalized_rms = normalize_feature(feature=rms)
 
                     # Store features
-                    features['mel_log_spectrogram'].append(normalized_log_mel_spec)
-                    features['spectrogram'].append(normalized_log_spec)
+                    #features['mel_log_spectrogram'].append(normalized_log_mel_spec)
+                    #features['spectrogram'].append(normalized_log_spec)
                     features['mfcc'].append(normalized_mfcc)
-                    features['rms'].append(normalized_rms)
+                    #features['rms'].append(normalized_rms)
                     labels.append(folder.name)
 
                 except Exception as e:
@@ -140,10 +158,10 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
     # Padding features to ensure consistency in shape
     print("Padding features to consistent shapes...")
     max_time_steps = {
-        'mel_log_spectrogram': max(f.shape[1] for f in features['mel_log_spectrogram']),
-        'spectrogram': max(f.shape[1] for f in features['spectrogram']),
+        #'mel_log_spectrogram': max(f.shape[1] for f in features['mel_log_spectrogram']),
+        #'spectrogram': max(f.shape[1] for f in features['spectrogram']),
         'mfcc': max(f.shape[1] for f in features['mfcc']),
-        'rms': max(len(f) for f in features['rms'])
+        #'rms': max(len(f) for f in features['rms'])
     }
     padded_features = pad_features(features, max_time_steps)
 
@@ -154,3 +172,6 @@ def extract_audio_features(organized_data_folder: Path) -> Dict:
     }
 
     return total_dataset
+
+
+

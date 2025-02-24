@@ -1,0 +1,8 @@
+numpy~=2.0.2
+scikit-learn~=1.5.2
+keras~=3.7.0
+librosa~=0.10.2.post1
+matplotlib~=3.9.3
+tqdm~=4.67.1
+pandas~=2.2.3
+scipy~=1.13.1
