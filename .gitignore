@@ -8,6 +8,7 @@ venv/
 
 data/ravdess_production
 data/ravdess_organized
+data/ravdess_preprocessed
 
 __pycache__/
 

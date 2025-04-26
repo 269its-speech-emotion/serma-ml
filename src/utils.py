@@ -2,7 +2,9 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from src.config import logger
+
 
 def plot_signals(original_signal, preprocessed_signal, sample_rate=16000):
     """Plot original and preprocessed audio signals for comparison.

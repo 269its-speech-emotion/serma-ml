@@ -1,6 +1,7 @@
 import itertools
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix, roc_curve, auc, classification_report
 from sklearn.preprocessing import LabelBinarizer

@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from from_root import from_root
 
-
 # Define constants
 ORGANIZED_DATASET_FOLDER = from_root('data', 'ravdess_organized')
 REPORTS_DATASET_FOLDER = from_root('reports', 'figures')

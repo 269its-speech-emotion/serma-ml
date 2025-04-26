@@ -4,15 +4,14 @@
 #                                                                              #
 ################################################################################
 
-from sklearn.model_selection import train_test_split
-from keras import utils
-from keras import models
-
 from typing import Tuple
+
 import numpy as np
-
-
+from keras import models
+from keras import utils
+from sklearn.model_selection import train_test_split
 from src.models.models_architectures import cnn_1d_model
+
 
 def prepare_and_split_data(data: dict, feature_type: str = 'mfcc', val_size: float = 0.2, test_size: float = 0.1) \
         -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:

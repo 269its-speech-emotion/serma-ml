@@ -1,7 +1,12 @@
-import shutil
-from tqdm import tqdm
-from pathlib import  Path
 import random
+import shutil
+from pathlib import Path
+
+import soundfile as sf
+from tqdm import tqdm
+
+from config import logger
+from src.preprocessing import preprocess_audio_file
 
 """
 Each of the 7356 RAVDESS files has a unique filename.
@@ -78,3 +83,42 @@ def create_production_data(processed_data_folder: Path, production_data_folder: 
                 emotion_code = CODE_OF_EMOTIONS[file_path.stem[6:8]]  # Extract emotion type
                 new_file_name = f"{emotion_code}_{file_path.name}"
                 shutil.move(str(file_path), str(production_data_folder / new_file_name))
+
+
+def preprocess_and_save_dataset(organized_data_folder: Path, preprocessed_data_folder: Path, sample_rate=16000) -> None:
+    """
+    Preprocesses and saves the dataset as WAV files.
+
+    Args:
+        organized_data_folder (Path): Path to the folder containing organized RAVDESS dataset.
+        preprocessed_data_folder (Path): Path where preprocessed audio files will be saved.
+        sample_rate (int): Sample rate for saving WAV files (default: 16000 Hz).
+    """
+    # Ensure the preprocessed data folder exists
+    preprocessed_data_folder.mkdir(parents=True, exist_ok=True)
+
+    total_files_processed = 0
+
+    # Iterate through each emotion folder
+    for folder in organized_data_folder.iterdir():
+        if folder.is_dir():  # Ensure it's a directory
+            emotion_type_folder = preprocessed_data_folder / folder.name
+            emotion_type_folder.mkdir(parents=True, exist_ok=True)  # Create target folder if it doesn't exist
+
+            # Progress bar for files in the current folder
+            for file in tqdm(folder.iterdir(), desc=f'Preprocessing {folder.name}'):
+                try:
+                    # Preprocess the audio file
+                    preprocessed_audio = preprocess_audio_file(file)
+
+                    # Save preprocessed audio as a WAV file
+                    save_path = emotion_type_folder / f"{file.stem}_preprocessed.wav"
+                    sf.write(save_path, preprocessed_audio, samplerate=sample_rate)
+
+                    total_files_processed += 1
+
+                except Exception as e:
+                    logger.error(f"Error processing {file}: {e}")
+
+    logger.info(f"Preprocessing complete. {total_files_processed} audio files processed and saved as WAV.")
+

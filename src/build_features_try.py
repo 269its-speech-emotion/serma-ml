@@ -4,16 +4,7 @@
 #                                                                              #
 ################################################################################
 
-from pathlib import Path
-from typing import Dict
-
-import librosa  # For audio analysis and processing
-import numpy as np
-import pandas as pd
-from tqdm import tqdm
 from from_root import from_root
-from pprint import pprint
-
 
 N_FFT = 512 #2048  # Number of FFT components for spectrograms
 HOPE_LENGTH = 512  # Hop length for sliding window in spectrograms
@@ -32,7 +23,6 @@ import numpy as np
 import pandas as pd
 import librosa
 from scipy import stats
-import os
 
 # Parameters
 N_MFCCs = 13  # Number of MFCCs to compute

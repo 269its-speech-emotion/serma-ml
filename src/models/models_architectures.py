@@ -5,9 +5,8 @@
 ################################################################################
 
 from typing import Tuple
+
 import keras
-
-
 
 '''
 def cnn_model(input_shape: Tuple[int, int, int], num_classes: int = 8) -> models.Sequential:

@@ -5,12 +5,10 @@
 ################################################################################
 
 from from_root import from_root
-from src.make_dataset import organize_dataset_into_emotion_type, create_production_data
-from src.visualize import get_random_audio_files, plot_audio_features
+
+from src.evaluate_model import model_performance_and_assessment
 from src.extract_features import extract_audio_features
 from src.models.train_model import prepare_and_split_data, model_training
-from src.evaluate_model import model_performance_and_assessment
-
 
 RAW_DATASET_FOLDER = from_root('data', 'ravdess_raw')
 ORGANIZED_DATASET_FOLDER = from_root('data', 'ravdess_organized')
