@@ -1,3 +1,26 @@
+venv/
 
 
 .idea/
+.idea/*
+
+
+.vscode/
+
+data/ravdess_production
+data/ravdess_organized
+
+__pycache__/
+
+
+*.png
+
+*.ipynb 
+
+*.json
+
+*.csv
+=======
+
+.idea/
+
